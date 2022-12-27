@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "60371763275",
+    "project_id": "moneylover-6edb9",
+    "storage_bucket": "moneylover-6edb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60371763275:android:69ede79c348b5577984dce",
+        "android_client_info": {
+          "package_name": "com.globizs.moneylover"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "60371763275-epls0qio13bp1rf0snf9kuer9g72g6h5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.globizs.moneylover",
+            "certificate_hash": "bdc0331a912dbd875d6d8cc5236c3efe619ed990"
+          }
+        },
+        {
+          "client_id": "60371763275-smskekomfkgusmmvde4hiin4fg3ndu0j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDri6_LUrzFuPjKT33QsBHObSIL0FV4kIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "60371763275-smskekomfkgusmmvde4hiin4fg3ndu0j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
