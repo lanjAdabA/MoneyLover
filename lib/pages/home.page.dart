@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:moneylover/pages/account.page.dart';
+import 'package:moneylover/pages/add.page.dart';
+import 'package:moneylover/pages/homedashboard.dart';
+import 'package:moneylover/pages/planning.page.dart';
+import 'package:moneylover/pages/transaction.page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,225 +12,108 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  AnimationController? _controller;
-  Animation<double>? _animation;
-
-  AnimationController? _controller2;
-  Animation<double>? _animation2;
-
-  AnimationController? _controller3;
-  Animation<double>? _animation3;
-
-  AnimationController? _controller4;
-  Animation<double>? _animation4;
-
-  AnimationController? _controller5;
-  Animation<double>? _animation5;
-
-  int currentValue = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _animation = Tween<double>(begin: 25, end: 33).animate(CurvedAnimation(
-        parent: _controller!,
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.easeIn))
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _controller2 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _animation2 = Tween<double>(begin: 25, end: 33).animate(CurvedAnimation(
-        parent: _controller2!,
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.easeIn))
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _controller3 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _animation3 = Tween<double>(begin: 25, end: 33).animate(CurvedAnimation(
-        parent: _controller3!,
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.easeIn))
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _controller4 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _animation4 = Tween<double>(begin: 25, end: 33).animate(CurvedAnimation(
-        parent: _controller4!,
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.easeIn))
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _controller5 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _animation5 = Tween<double>(begin: 25, end: 33).animate(CurvedAnimation(
-        parent: _controller5!,
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.ease))
-      ..addListener(() {
-        setState(() {});
-      });
+class _HomePageState extends State<HomePage> {
+  int selectedIndex = 0;
+  void navigationBottomBar(int index) {
+    setState(() {
+      selectedIndex = index;
+      // HapticFeedback.lightImpact();
+    });
   }
 
-  @override
-  void dispose() {
-    _controller!.dispose();
-    _controller2!.dispose();
-    _controller3!.dispose();
-    _controller4!.dispose();
-    _controller5!.dispose();
-    super.dispose();
-  }
+  final List pageList = [
+    const HomeDashboardPage(),
+    const TransactionPage(),
+    AddPage(),
+    const PlanningPage(),
+    const AccountPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.grey,
-      body: Stack(
-        children: [
-          // HOME PAGE
-          SizedBox(
-            height: size.height,
-            width: size.width,
-            child: null,
-          ),
-
-          Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            child: Container(
-              height: size.width * .14,
-              width: size.width,
-              margin: EdgeInsets.all(size.width * .04),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
+    Future<bool> _onBackButtonPressed(BuildContext context) async {
+      bool exitApp = await showDialog(
+          context: context,
+          builder: ((context) {
+            return AlertDialog(
+              buttonPadding: const EdgeInsets.all(20),
+              title: const Text("Are you sure you want to exit?"),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[200]),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text("Cancel"),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.home,
-                      color: currentValue == 0 ? Colors.blue : Colors.black38,
-                      size: _animation!.value,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        currentValue = 0;
-                        _controller!.forward();
-                        _controller2!.reverse();
-                        _controller3!.reverse();
-                        _controller4!.reverse();
-                        _controller5!.reverse();
-                        HapticFeedback.lightImpact();
-                      });
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text("Ok"),
+                ),
+              ],
+            );
+          }));
+
+      return exitApp;
+    }
+
+    return WillPopScope(
+      onWillPop: () => _onBackButtonPressed(context),
+      child: Scaffold(
+        body: pageList.elementAt(selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: const Color.fromARGB(202, 247, 247, 250),
+            selectedItemColor: const Color.fromARGB(255, 2, 2, 2),
+            unselectedItemColor: const Color.fromARGB(255, 158, 160, 155),
+            currentIndex: selectedIndex,
+            selectedFontSize: 16,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            unselectedFontSize: 10,
+            type: BottomNavigationBarType.fixed,
+            // enableFeedback: true,
+            onTap: navigationBottomBar,
+            items: [
+              BottomNavigationBarItem(
+                  icon: SizedBox(
+                      height: MediaQuery.of(context).size.height * .04,
+                      child: const Icon(Icons.home)),
+                  label: "Home"),
+              BottomNavigationBarItem(
+                  icon: SizedBox(
+                      height: MediaQuery.of(context).size.height * .04,
+                      child: const Icon(Icons.wallet_rounded)),
+                  label: "Transaction"),
+              BottomNavigationBarItem(
+                  icon: SizedBox(
+                      height: MediaQuery.of(context).size.height * .04,
+                      child: const Icon(
+                        Icons.add_circle,
+                        color: Colors.green,
+                        size: 46,
+                      )),
+                  label: ""
+                  // label: "Add",
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.person_rounded,
-                      color: currentValue == 1 ? Colors.blue : Colors.black38,
-                      size: _animation2!.value,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        currentValue = 1;
-                        _controller2!.forward();
-                        _controller!.reverse();
-                        _controller3!.reverse();
-                        _controller4!.reverse();
-                        _controller5!.reverse();
-                        HapticFeedback.lightImpact();
-                      });
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.add_box_rounded,
-                      color: currentValue == 2 ? Colors.blue : Colors.green,
-                      size: _animation3!.value,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        currentValue = 2;
-                        _controller3!.forward();
-                        _controller!.reverse();
-                        _controller2!.reverse();
-                        _controller4!.reverse();
-                        _controller5!.reverse();
-                        HapticFeedback.lightImpact();
-                      });
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.favorite_rounded,
-                      color: currentValue == 3 ? Colors.blue : Colors.black38,
-                      size: _animation4!.value,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        currentValue = 3;
-                        _controller4!.forward();
-                        _controller!.reverse();
-                        _controller2!.reverse();
-                        _controller3!.reverse();
-                        _controller5!.reverse();
-                        HapticFeedback.lightImpact();
-                      });
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.settings_rounded,
-                      color: currentValue == 4 ? Colors.blue : Colors.black38,
-                      size: _animation5!.value,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        currentValue = 4;
-                        _controller5!.forward();
-                        _controller!.reverse();
-                        _controller2!.reverse();
-                        _controller3!.reverse();
-                        _controller4!.reverse();
-                        HapticFeedback.lightImpact();
-                      });
-                    },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+              BottomNavigationBarItem(
+                  icon: SizedBox(
+                      height: MediaQuery.of(context).size.height * .04,
+                      child: const Icon(Icons.bar_chart)),
+                  label: "Planning"),
+              BottomNavigationBarItem(
+                  icon: SizedBox(
+                      height: MediaQuery.of(context).size.height * .04,
+                      child: const Icon(Icons.person)),
+                  label: "Account"),
+            ]),
       ),
     );
+    Size size = MediaQuery.of(context).size;
   }
 }
+
+//! alpha code section
