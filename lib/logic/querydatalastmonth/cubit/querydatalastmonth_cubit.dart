@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -15,7 +17,7 @@ class QuerydatalastmonthCubit extends Cubit<QuerydatalastmonthState> {
 
   Future getlastmonthquery() async {
     DateTime dateTime = DateTime.now();
-    String date = dateTime.day.toString();
+    // String date = dateTime.day.toString();
     int month = dateTime.month;
 
     int lastday = DateTime(dateTime.year, month, 0).day;

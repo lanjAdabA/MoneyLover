@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +23,7 @@ class ServiceApi {
       final messages = await transaction.get();
       for (var message in messages.docs) {
         itemsList.add(message.data());
-        print(message.data());
+        // print(message.data());
       }
 
       return itemsList;

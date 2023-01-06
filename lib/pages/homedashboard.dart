@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'dart:developer';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:moneylover/logic/querydatalastweek/cubit/querydatalastweek_cubit
 import 'package:moneylover/logic/querydatathismonth/cubit/querydatathismonth_cubit.dart';
 import 'package:moneylover/logic/querydatathisweek/cubit/querydatathisweek_cubit.dart';
 import 'package:moneylover/pages/graph.page.dart';
+import 'package:moneylover/router/router.gr.dart';
 import '../logic/fetchdata/cubit/fetchdata_cubit.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 
@@ -23,6 +25,13 @@ class HomeDashboardPage extends StatefulWidget {
 
 class _HomeDashboardPageState extends State<HomeDashboardPage>
     with TickerProviderStateMixin {
+  bool obscurePassword = true;
+  void togglePasswordObscure() {
+    setState(() {
+      obscurePassword = !obscurePassword;
+    });
+  }
+
   final CollectionReference transaction =
       FirebaseFirestore.instance.collection('transaction');
   var currencyformat =
@@ -76,14 +85,20 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                     Row(
                       children: [
                         Text(
-                          currencyformat.format(totalamount),
+                          obscurePassword
+                              ? "*******"
+                              : currencyformat.format(totalamount),
                           style: const TextStyle(
                               fontSize: 28, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(
                           width: 5,
                         ),
-                        const Icon(Icons.visibility)
+                        GestureDetector(
+                            onTap: togglePasswordObscure,
+                            child: Icon(obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility)),
                       ],
                     ),
                     const Icon(Icons.notifications_rounded)
@@ -134,20 +149,25 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                       children: [
                         // my wallet n see all
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
-                              "My Wallets",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              "See all",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green),
-                            )
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            context.router.push(const MyWalletsRoute());
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text(
+                                "My Wallets",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "See all",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green),
+                              )
+                            ],
+                          ),
                         ),
                         const Divider(
                           color: Colors.blueGrey,
@@ -156,33 +176,50 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.blueGrey[700]),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(2.0),
-                                      child: Icon(
-                                        Icons.wallet,
-                                        color: Colors.amber,
-                                      ),
-                                    )),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                const Text(
-                                  "Cash",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
+                            InkWell(
+                              onTap: () {
+                                context.router.push(const TransactionRoute());
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.blueGrey[700]),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(2.0),
+                                        child: Icon(
+                                          Icons.wallet,
+                                          color: Colors.amber,
+                                        ),
+                                      )),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  const Text(
+                                    "Cash",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(
-                              currencyformat.format(totalamount),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            )
+                            InkWell(
+                              onTap: () {
+                                context.router.push(const TransactionRoute());
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: Text(
+                                  obscurePassword
+                                      ? "*******"
+                                      : currencyformat.format(totalamount),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -196,7 +233,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
               //spending report n see report
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 11.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
@@ -228,11 +265,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                         ),
                         Container(
                           width: 300.0,
-                          height: 40.0,
+                          height: 43.0,
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
+                                const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Align(
                             alignment: Alignment.centerLeft,
@@ -240,7 +277,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                                 indicatorSize: TabBarIndicatorSize.tab,
                                 indicator: const BubbleTabIndicator(
                                   indicatorRadius: 10,
-                                  indicatorHeight: 35.0,
+                                  indicatorHeight: 36.0,
                                   indicatorColor: Colors.white,
                                   tabBarIndicatorSize: TabBarIndicatorSize.tab,
                                 ),
@@ -270,25 +307,23 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           left: 26, right: 26, top: 20),
-                                      child: Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              currencyformat
-                                                  .format(thisweekExpenditure),
-                                              style:
-                                                  const TextStyle(fontSize: 25),
-                                            ),
-                                            const Text(
-                                              'Total spend this week',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.grey),
-                                            )
-                                          ],
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            currencyformat
+                                                .format(thisweekExpenditure),
+                                            style:
+                                                const TextStyle(fontSize: 25),
+                                          ),
+                                          const Text(
+                                            'Total spend this week',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey),
+                                          )
+                                        ],
                                       ),
                                     ),
                                     BargraphPage(
@@ -307,25 +342,23 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           left: 26, right: 26, top: 20),
-                                      child: Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              currencyformat
-                                                  .format(thismonthExpenditure),
-                                              style:
-                                                  const TextStyle(fontSize: 25),
-                                            ),
-                                            const Text(
-                                              'Total spend this month',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.grey),
-                                            )
-                                          ],
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            currencyformat
+                                                .format(thismonthExpenditure),
+                                            style:
+                                                const TextStyle(fontSize: 25),
+                                          ),
+                                          const Text(
+                                            'Total spend this month',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey),
+                                          )
+                                        ],
                                       ),
                                     ),
                                     BargraphPage(
@@ -427,8 +460,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                           colors: [
                             Color.fromARGB(255, 240, 196, 64),
                             Color.fromARGB(255, 237, 160, 44),
+                            Color.fromARGB(255, 237, 160, 44),
                             Color.fromARGB(255, 239, 62, 121),
-                            Color.fromARGB(255, 223, 65, 118),
                           ],
                         )),
                     child: const Center(
@@ -449,7 +482,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
 
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 11,
+                  horizontal: 12,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -525,8 +558,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                                           fontSize: 18,
                                           color: cateogoryname[index]['name'] ==
                                                   'Salary'
-                                              ? const Color.fromARGB(
-                                                  255, 72, 215, 247)
+                                              ? Colors.blue
                                               : Colors.red),
                                     ),
                                   ),

@@ -7,6 +7,7 @@ import 'package:moneylover/pages/account.page.dart';
 import 'package:moneylover/pages/add.page.dart';
 import 'package:moneylover/pages/home.page.dart';
 import 'package:moneylover/pages/login.page.dart';
+import 'package:moneylover/pages/mywalletseeall.page.dart';
 import 'package:moneylover/pages/planning.page.dart';
 import 'package:moneylover/pages/selectcategory.page.dart';
 import 'package:moneylover/pages/transaction.page.dart';
@@ -23,6 +24,7 @@ import 'package:moneylover/pages/transaction.page.dart';
     AutoRoute(page: PlanningPage),
     AutoRoute(page: AccountPage),
     AutoRoute(page: SelectionPage),
+    AutoRoute(page: MyWalletsPage),
   ],
 )
 class $AppRouter {}

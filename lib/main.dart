@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moneylover/firebase_options.dart';
 import 'package:moneylover/provider/mulltiprovider.wrapper.dart';
 import 'package:moneylover/router/router.gr.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,11 +23,12 @@ class MyApp extends StatelessWidget {
         routerDelegate: _appRouter.delegate(),
         routeInformationParser: _appRouter.defaultRouteParser(),
         theme: ThemeData(
-            primaryColor: Colors.grey[200],
+            primaryColor: Colors.grey[300],
             appBarTheme: const AppBarTheme(
               color: Colors.white,
               foregroundColor: Color.fromARGB(255, 48, 48, 50),
             )),
+        builder: EasyLoading.init(),
       ),
     );
   }

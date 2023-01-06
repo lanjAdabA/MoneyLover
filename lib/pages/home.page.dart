@@ -31,17 +31,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: no_leading_underscores_for_local_identifiers
     Future<bool> _onBackButtonPressed(BuildContext context) async {
       bool exitApp = await showDialog(
           context: context,
           builder: ((context) {
             return AlertDialog(
               buttonPadding: const EdgeInsets.all(20),
-              title: const Text("Are you sure you want to exit?"),
+              title: const Text("Are you sure to exit?"),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[200]),
+                      backgroundColor: Colors.grey[300]),
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
@@ -112,7 +113,7 @@ class _HomePageState extends State<HomePage> {
             ]),
       ),
     );
-    Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
   }
 }
 

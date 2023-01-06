@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:moneylover/pages/googlesignin.page.dart';
 
 class SigninPage extends StatefulWidget {
@@ -178,12 +179,13 @@ class _SigninPageState extends State<SigninPage> {
                   onTap: (() async {
                     await Google_Login().signup(context);
                     log("signed_in_using_google_account");
+                    EasyLoading.dismiss();
                   }),
                   child: SizedBox(
                       width: MediaQuery.of(context).size.width * .5,
                       child: Image.asset("assets/googleBtn.png")),
                 )
-                //* forgot pass
+                //* forgot password
               ],
             ),
           ),

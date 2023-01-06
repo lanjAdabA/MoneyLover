@@ -1,8 +1,11 @@
+// ignore_for_file: camel_case_types, non_constant_identifier_names
+
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:moneylover/router/router.gr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +20,8 @@ class Google_Login {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> signup(BuildContext context) async {
+    EasyLoading.show(status: 'Please Wait..');
+
     final GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();

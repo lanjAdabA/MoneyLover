@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -31,7 +33,7 @@ class QuerydatalastweekCubit extends Cubit<QuerydatalastweekState> {
     String month = dateTime.month.toString();
     int year = dateTime.year;
     int finaldatestart = 0;
-    String finalmonth = '';
+    // String finalmonth = '';
     int finaldateend = 0;
     DateTime endee;
     DateTime startdate;

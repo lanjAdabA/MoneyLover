@@ -6,6 +6,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 
 import 'package:moneylover/router/router.gr.dart';
@@ -128,25 +129,39 @@ class _AddpageState extends State<AddPage> {
                     if (amountcontroller.text.isEmpty || categoryid.isEmpty) {
                       CustomSnackbar(
                           context,
-                          const Text("Please fill in the Fields first"),
-                          Colors.red);
+                          const SizedBox(
+                            height: 50,
+                            child: Center(
+                                child: Text(
+                                    "  Please fill in the Fields first !")),
+                          ),
+                          const Color.fromARGB(255, 221, 128, 121));
                     } else {
+                      EasyLoading.show(status: 'Adding please wait..');
+
                       await ServiceApi().addtransaction(
                           amount: int.parse(amountcontroller.text),
                           categoryid: categoryid,
                           notes: notecontroller.text,
                           date:
                               datetime2 ?? Timestamp.fromDate(DateTime.now()));
-                      CustomSnackbar(context, const Text("Successfully added"),
-                          Colors.green);
+                      CustomSnackbar(
+                          context,
+                          const SizedBox(
+                              height: 50,
+                              child: Center(
+                                  child: Text(" ☑️ Successfully added"))),
+                          const Color.fromARGB(255, 113, 187, 116));
+
                       log("added transaction(serviceApi)");
+                      EasyLoading.dismiss();
 
                       setState(() {
                         resultvalue = 'Select Category';
                         log("set state");
                       });
                       context.router.popAndPush(const AuthFlowRoute());
-                      log(" pop");
+                      log(" authflow pop n push");
                     }
                   },
                   child: const Padding(
@@ -162,7 +177,7 @@ class _AddpageState extends State<AddPage> {
               height: 30,
             ),
             Container(
-              height: 300,
+              height: 340,
               width: MediaQuery.of(context).size.width,
               color: Colors.white,
               child: Column(
@@ -240,6 +255,19 @@ class _AddpageState extends State<AddPage> {
                               child: _dataofbirth()),
                         )
                       ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.warning,
+                      color: Colors.red,
+                    ),
+                    title: Text(
+                      "If date is not selected, current date will be choosen as default.",
+                      style: TextStyle(color: Colors.red[900], fontSize: 13),
                     ),
                   )
                 ],

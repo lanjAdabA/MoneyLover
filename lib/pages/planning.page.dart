@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, implementation_imports, unnecessary_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -12,10 +14,8 @@ class PlanningPage extends StatefulWidget {
 class _PlanningPageState extends State<PlanningPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Center(
-        child: Text("Planning"),
-      ),
+    return const Center(
+      child: Text("Planning"),
     );
   }
 }

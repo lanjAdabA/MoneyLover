@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -21,7 +23,7 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
   }
   Future getthismonthquery() async {
     DateTime dateTime = DateTime.now();
-    String date = dateTime.day.toString();
+    // String date = dateTime.day.toString();
     int month = dateTime.month;
     int lastday = DateTime(dateTime.year, month, 0).day;
     String year = dateTime.year.toString();
@@ -46,7 +48,7 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
       List datelist = [];
       List categoryidlist = [];
       int totalamountexthismonth = 0;
-      int incomeamountexthismonth = 0;
+      int incomeamountthismonth = 0;
       for (var message in event.docs) {
         var data = await ServiceApi()
             .getspecificcategory(id: message.data()['category_id']);
@@ -56,8 +58,8 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
 
           log('Expense');
         } else {
-          incomeamountexthismonth =
-              incomeamountexthismonth + message['amount'] as int;
+          incomeamountthismonth =
+              incomeamountthismonth + message['amount'] as int;
 
           log('Income query');
         }
@@ -105,7 +107,7 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
         grouptransaction: grouptransaction,
         datelist: datelist,
         expensetotalamountthismonth: totalamountexthismonth,
-        incometotalamountlastmonth: incomeamountexthismonth,
+        incometotalamountlastmonth: incomeamountthismonth,
       ));
     });
   }
