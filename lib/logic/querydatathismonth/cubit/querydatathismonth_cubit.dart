@@ -13,9 +13,9 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
   QuerydatathismonthCubit()
       : super(const QuerydatathismonthState(
             expensetotalamountthismonth: 0,
-            incometotalamountlastmonth: 0,
+            incometotalamountthismonth: 0,
             categoryidlist: [],
-            categoyname: [],
+            categoryname: [],
             datelist: [],
             grouptransaction: {},
             transaction: [])) {
@@ -42,19 +42,21 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
         .orderBy('date', descending: true)
         .snapshots()
         .listen((event) async {
-      List cateogoryname = [];
+      List categoryname = [];
       List transaction = [];
 
       List datelist = [];
       List categoryidlist = [];
-      int totalamountexthismonth = 0;
+      List transactionidlist = [];
+      int totalamountexpensedthismonth = 0;
       int incomeamountthismonth = 0;
+
       for (var message in event.docs) {
         var data = await ServiceApi()
             .getspecificcategory(id: message.data()['category_id']);
         if (data['type'] == 'Expense') {
-          totalamountexthismonth =
-              totalamountexthismonth + message['amount'] as int;
+          totalamountexpensedthismonth =
+              totalamountexpensedthismonth + message['amount'] as int;
 
           log('Expense');
         } else {
@@ -64,11 +66,23 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
           log('Income query');
         }
         transaction.add(message.data());
-        cateogoryname.add(data['name']);
-
+        categoryname.add(data['name']);
+        transactionidlist.add(message.id);
         categoryidlist.add(message['category_id']);
       }
-      var result = Map.fromIterables(categoryidlist, cateogoryname);
+
+      int i;
+      int j;
+      for (j = 0; j < transaction.length; j++) {
+        for (i = 0; i < transactionidlist.length; i++) {
+          transaction[j]["transaction_id"] = transactionidlist[j];
+          j++;
+        }
+      }
+
+      log(transactionidlist.toString());
+
+      var result = Map.fromIterables(categoryidlist, categoryname);
       log('this month${result.toString()}');
       for (Map element in transaction) {
         element.update('category_id', (value) => result[value]);
@@ -96,18 +110,19 @@ class QuerydatathismonthCubit extends Cubit<QuerydatathismonthState> {
           return date2;
         }
       }));
+      log(grouptransaction.toString());
 
       grouptransaction.forEach((key, value) {
         datelist.add(key);
       });
       emit(QuerydatathismonthState(
         transaction: transaction,
-        categoyname: cateogoryname,
+        categoryname: categoryname,
         categoryidlist: categoryidlist,
         grouptransaction: grouptransaction,
         datelist: datelist,
-        expensetotalamountthismonth: totalamountexthismonth,
-        incometotalamountlastmonth: incomeamountthismonth,
+        expensetotalamountthismonth: totalamountexpensedthismonth,
+        incometotalamountthismonth: incomeamountthismonth,
       ));
     });
   }

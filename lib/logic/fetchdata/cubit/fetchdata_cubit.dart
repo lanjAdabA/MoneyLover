@@ -19,7 +19,9 @@ class FetchdataCubit extends Cubit<FetchdataState> {
             transactionExp: [],
             expensetotalamount: 0,
             top3categoryname: [],
-            top3transaction: [])) {
+            top3transaction: [],
+            categoryid: [],
+            transactionid: [])) {
     getdatalist();
   }
   Future getqueryyear({required String year}) async {
@@ -47,6 +49,10 @@ class FetchdataCubit extends Cubit<FetchdataState> {
           .listen((event) async {
         int totalamount = 0;
         int totalamountex = 0;
+
+        List categoryid = [];
+        List transactionid = [];
+
         List top3categoryname = [];
         List top3transaction = [];
         List<DocumentSnapshot<Object?>> categoryname = [];
@@ -57,7 +63,8 @@ class FetchdataCubit extends Cubit<FetchdataState> {
           transaction.add(message);
           var data = await ServiceApi()
               .getspecificcategory(id: message['category_id']);
-          categoryname.add(data);
+          categoryid.add(data.id);
+          transactionid.add(message.id);
 
           categoryname.add(data);
           if (data['type'] == 'Income') {
@@ -86,7 +93,12 @@ class FetchdataCubit extends Cubit<FetchdataState> {
             transactionExp: transactionEx,
             expensetotalamount: totalamountex,
             top3categoryname: top3categoryname,
-            top3transaction: top3transaction));
+            top3transaction: top3transaction,
+            categoryid: categoryid,
+            transactionid: transactionid
+            //! id
+
+            ));
       });
     } catch (e) {
       return null;

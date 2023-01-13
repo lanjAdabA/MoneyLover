@@ -24,6 +24,7 @@ class _SigninPageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           centerTitle: true,
           title: const Text("Login Page"),
@@ -61,14 +62,12 @@ class _SigninPageState extends State<SigninPage> {
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   width: 2,
-                                  color: Color.fromARGB(
-                                      255, 181, 216, 245)), //<-- SEE HERE
+                                  color: Color.fromARGB(255, 181, 216, 245)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   width: 2,
-                                  color: Color.fromARGB(
-                                      255, 213, 246, 230)), //<-- SEE HERE
+                                  color: Color.fromARGB(255, 213, 246, 230)),
                             ),
                             hintText: '   Username'),
                         showCursor: true,

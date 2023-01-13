@@ -1,12 +1,12 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:moneylover/logic/fetchdata/cubit/fetchdata_cubit.dart';
 import 'package:moneylover/logic/fetchrecentdata/cubit/fetchrecentdata_cubit.dart';
 import 'package:moneylover/logic/querydatathismonth/cubit/querydatathismonth_cubit.dart';
+import 'package:moneylover/widgets/tabbarviewblock.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
@@ -23,15 +23,19 @@ class _TransactionPageState extends State<TransactionPage>
   @override
   Widget build(BuildContext context) {
     final recent = context.watch<FetchrecentdataCubit>().state;
-
     final thismonth = context.watch<QuerydatathismonthCubit>().state;
-
     int thismonthExpenditure = thismonth.expensetotalamountthismonth;
-
-    int thismonthincome = thismonth.incometotalamountlastmonth;
-
-    List<DocumentSnapshot<Object?>> cateogoryname = recent.categoyname;
+    int thismonthincome = thismonth.incometotalamountthismonth;
+    int remainingBalance = (thismonthincome - thismonthExpenditure);
+    List cateogoryname = recent.categoryname;
     List transaction = recent.transaction;
+    List categoryid = recent.categoryid;
+    List transactionid = recent.transactionid;
+
+    List datelistthismonth = thismonth.datelist;
+
+    Map<String, List<dynamic>> grouptransactionthismonth =
+        thismonth.grouptransaction;
 
     final s = context.watch<FetchdataCubit>().state;
     TabController tabController =
@@ -53,6 +57,7 @@ class _TransactionPageState extends State<TransactionPage>
                     "Balance",
                     style: TextStyle(color: Colors.grey),
                   ),
+//
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,6 +84,7 @@ class _TransactionPageState extends State<TransactionPage>
                       )
                     ],
                   ),
+                  //
 
                   const SizedBox(
                     height: 10,
@@ -183,155 +189,17 @@ class _TransactionPageState extends State<TransactionPage>
                   child: Text("six"),
                 ),
                 //7thismonth
-                SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            border: Border(
-                                bottom: BorderSide(
-                                    color:
-                                        Color.fromARGB(255, 211, 209, 209)))),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Inflow"),
-                                      Text(
-                                        thismonthincome.toString(),
-                                        style:
-                                            const TextStyle(color: Colors.blue),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Outflow"),
-                                      Text(
-                                        thismonthExpenditure.toString(),
-                                        style:
-                                            const TextStyle(color: Colors.red),
-                                      )
-                                    ],
-                                  ),
-                                  const Divider(
-                                    indent: 280,
-                                    color: Colors.grey,
-                                    thickness: 1,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: const [Text("remaining amount")],
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: const Color.fromARGB(255, 214, 247, 215),
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              child: const Text(
-                                "View report for this period",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        child: ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: cateogoryname.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.grey),
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(4.0),
-                                            child: Icon(
-                                              Icons.wallet,
-                                              color: Colors.amber,
-                                            ),
-                                          )),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            cateogoryname[index]['name'],
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18),
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          const Text("Optional Description"),
-                                          const SizedBox(
-                                            height: 8,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    currencyformat
-                                        .format(transaction[index]['amount']),
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: cateogoryname[index]['name'] ==
-                                                'Salary'
-                                            ? Colors.blue
-                                            : Colors.red),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                TabBarViewBlock(
+                  thismonthincome: thismonthincome,
+                  thismonthExpenditure: thismonthExpenditure,
+                  remainingBalance: remainingBalance,
+                  cateogoryname: cateogoryname,
+                  grouptransaction: grouptransactionthismonth,
+                  transaction: transaction,
+                  datelist: datelistthismonth,
+                  transactionid: transactionid, cateogoryid: categoryid,
+
+                  // datelist: const [],
                 ),
                 //8future
                 const Center(

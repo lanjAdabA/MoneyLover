@@ -44,7 +44,11 @@ class BargraphPage extends StatelessWidget {
                 interval: 1),
             primaryYAxis: NumericAxis(
               numberFormat: NumberFormat.compact(),
-              minimum: 0, maximum: thismonthamount + 500,
+              minimum: 0,
+              maximum: thismonthamount > lastmonthamount
+                  ? thismonthamount + 500
+                  : lastmonthamount + 500,
+
               interval: 2000,
               majorGridLines: const MajorGridLines(width: 1),
               //Hide the axis line of x-axis

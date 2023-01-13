@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, use_key_in_widget_constructors, must_be_immutable, use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
 
@@ -8,24 +8,39 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-
-import 'package:moneylover/router/router.gr.dart';
 import 'package:moneylover/services/serviceApi.dart';
 import 'package:moneylover/widgets/snackbar.dart';
 
-class AddPage extends StatefulWidget {
+import '../router/router.gr.dart';
+
+class UpdateTransactionPage extends StatefulWidget {
+  final String transactionid;
+  final String categoryid;
+  final String categoryname;
+  final int amount;
+  final DateTime date;
+
   var format = DateFormat("dd-MM-yyyy");
 
   DateTime? initialdate = DateTime(2010);
   Timestamp? datetime2;
 
+  UpdateTransactionPage(
+      {super.key,
+      required this.transactionid,
+      required this.categoryid,
+      required this.categoryname,
+      required this.amount,
+      required this.date});
+
   @override
-  State<AddPage> createState() => _AddpageState();
+  State<UpdateTransactionPage> createState() => _UpdateTransactionPageState();
 }
 
-class _AddpageState extends State<AddPage> {
+class _UpdateTransactionPageState extends State<UpdateTransactionPage> {
   var format = DateFormat("dd-MMMM-yyyy");
   DateTime? initialdate = DateTime(2010);
+  String datetimeforshow = "today";
   Timestamp? datetime2;
   var datetimenow =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -40,13 +55,9 @@ class _AddpageState extends State<AddPage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: DateTimeField(
-              decoration: const InputDecoration(
-                label: Text(
-                  "Today",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                // hintText: 'Today',
-              ),
+              decoration: InputDecoration(
+                  hintText: datetimeforshow,
+                  hintStyle: const TextStyle(color: Colors.black)),
               format: format,
               onShowPicker: (context, currentValue) {
                 return showDatePicker(
@@ -77,16 +88,39 @@ class _AddpageState extends State<AddPage> {
   String resultvalue = 'Select Category';
   String categoryid = '';
 
-  TextEditingController amountcontroller = TextEditingController();
-  TextEditingController notecontroller = TextEditingController();
+  TextEditingController updateamountcontroller = TextEditingController();
+  TextEditingController updatenotecontroller = TextEditingController();
 
   Future<void> _navigateAndDisplaySelection(BuildContext context) async {
     final result = await context.router.push(const SelectionRoute());
     if (!mounted) return;
-    var item = await ServiceApi().getspecificcategory(id: result.toString());
+    var item = await
+        //  ServiceApi().updatetransaction(
+        //     id: widget.transactionid,
+        //     categoryid: widget.categoryid,
+        //     amount: widget.amount,
+        //     date: widget.date);
+        ServiceApi().getspecificcategory(id: result.toString());
     setState(() {
       resultvalue = item['name'];
       categoryid = result.toString();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      updateamountcontroller.text = widget.amount.toString();
+
+      resultvalue = widget.categoryname;
+
+      categoryid = widget.categoryid;
+      datetimeforshow =
+          "${widget.date.day}-${widget.date.month}-${widget.date.year}";
+
+      datetime2 = Timestamp.fromDate(widget.date);
     });
   }
 
@@ -109,7 +143,6 @@ class _AddpageState extends State<AddPage> {
                 leading: InkWell(
                     onTap: () {
                       context.router.popAndPush(const AuthFlowRoute());
-                      // Navigator.(context);
                       setState(() {
                         resultvalue = 'Select Category';
                       });
@@ -122,39 +155,40 @@ class _AddpageState extends State<AddPage> {
                 title: const Padding(
                   padding: EdgeInsets.only(left: 15),
                   child: Text(
-                    'Add Transaction',
+                    'Update Transaction',
                   ),
                 ),
                 trailing: InkWell(
                   onTap: () async {
-                    if (amountcontroller.text.isEmpty || categoryid.isEmpty) {
+                    if (updateamountcontroller.text.isEmpty ||
+                        categoryid.isEmpty) {
                       CustomSnackbar(
                           context,
                           const SizedBox(
                             height: 50,
                             child: Center(
                                 child: Text(
-                                    "  Please fill in the Fields first !")),
+                                    "  Please fill in the required Fields first !")),
                           ),
                           const Color.fromARGB(255, 221, 128, 121));
                     } else {
-                      EasyLoading.show(status: 'Adding please wait..');
+                      EasyLoading.show(status: 'Updating please wait..');
 
-                      await ServiceApi().addtransaction(
-                          amount: int.parse(amountcontroller.text),
+                      await ServiceApi().updatetransaction(
+                          amount: int.parse(updateamountcontroller.text),
                           categoryid: categoryid,
-                          notes: notecontroller.text,
-                          date:
-                              datetime2 ?? Timestamp.fromDate(DateTime.now()));
+                          // notes: updatenotecontroller.text,
+                          date: datetime2!,
+                          id: widget.transactionid);
                       CustomSnackbar(
                           context,
                           const SizedBox(
                               height: 50,
                               child: Center(
-                                  child: Text(" ☑️ Successfully added"))),
+                                  child: Text(" ☑️ Successfully updated"))),
                           const Color.fromARGB(255, 113, 187, 116));
 
-                      log("added transaction(serviceApi)");
+                      log("updated transaction(serviceApi)");
                       EasyLoading.dismiss();
 
                       setState(() {
@@ -168,7 +202,7 @@ class _AddpageState extends State<AddPage> {
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
-                      'SAVE',
+                      'UPDATE',
                     ),
                   ),
                 ),
@@ -195,7 +229,7 @@ class _AddpageState extends State<AddPage> {
                             child: TextFormField(
                               keyboardType:
                                   const TextInputType.numberWithOptions(),
-                              controller: amountcontroller,
+                              controller: updateamountcontroller,
                               decoration: const InputDecoration(
                                   hintText: 'Enter Amount'),
                             ),
@@ -236,7 +270,7 @@ class _AddpageState extends State<AddPage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20),
                             child: TextFormField(
-                              controller: notecontroller,
+                              controller: updatenotecontroller,
                               decoration: const InputDecoration(
                                   hintText: 'Write note (optional)'),
                             ),

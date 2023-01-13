@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -33,10 +31,12 @@ class QuerydatalastweekCubit extends Cubit<QuerydatalastweekState> {
     String month = dateTime.month.toString();
     int year = dateTime.year;
     int finaldatestart = 0;
-    // String finalmonth = '';
+    String finalmonth = '';
     int finaldateend = 0;
     DateTime endee;
     DateTime startdate;
+    log('last week ${weekstart.toString()}');
+    log('last week ${dayname.toString()}');
 
     if (month == '1') {
       switch (date) {
@@ -94,14 +94,56 @@ class QuerydatalastweekCubit extends Cubit<QuerydatalastweekState> {
               "${year.toString()}-0$month-0${finaldateend.toString()}");
 
           break;
-
-        default:
-          finaldatestart = date - (weekstart - 1);
+        case 7:
+          finaldatestart = 31 - (weekstart - 6);
           finaldateend = date - (weekend + 1);
           startdate = DateTime.parse(
-              "${year.toString()}-$month-${finaldatestart.toString()}");
+              "${(year - 1).toString()}-12-${finaldatestart.toString()}");
           endee = DateTime.parse(
               "${year.toString()}-0$month-0${finaldateend.toString()}");
+
+          break;
+        case 8:
+          finaldatestart = 31 - (weekstart - 7);
+          finaldateend = date - (weekend + 1);
+          startdate = DateTime.parse(
+              "${(year - 1).toString()}-12-${finaldatestart.toString()}");
+          endee = DateTime.parse(
+              "${year.toString()}-0$month-0${finaldateend.toString()}");
+
+          break;
+
+        default:
+          finaldatestart = date - (weekstart + 1);
+          finaldateend = date - (weekend + 1);
+          //start date
+          if (month.length < 2 && finaldatestart.toString().length < 2) {
+            startdate = DateTime.parse(
+                "${year.toString()}-0$month-0${finaldatestart.toString()}");
+          } else if (month.length < 2) {
+            startdate = DateTime.parse(
+                "${year.toString()}-0$month-${finaldatestart.toString()}");
+          } else if (finaldatestart.toString().length < 2) {
+            startdate = DateTime.parse(
+                "${year.toString()}-$month-0${finaldatestart.toString()}");
+          } else {
+            startdate = DateTime.parse(
+                "${year.toString()}-$month-${finaldatestart.toString()}");
+          }
+          //end date
+          if (month.length < 2 && finaldateend.toString().length < 2) {
+            endee = DateTime.parse(
+                "${year.toString()}-0$month-0${finaldateend.toString()}");
+          } else if (month.length < 2) {
+            endee = DateTime.parse(
+                "${year.toString()}-0$month-${finaldateend.toString()}");
+          } else if (finaldateend.toString().length < 2) {
+            endee = DateTime.parse(
+                "${year.toString()}-$month-0${finaldateend.toString()}");
+          } else {
+            endee = DateTime.parse(
+                "${year.toString()}-$month-${finaldateend.toString()}");
+          }
       }
 
       var finalstart = Timestamp.fromDate(startdate);
@@ -109,28 +151,31 @@ class QuerydatalastweekCubit extends Cubit<QuerydatalastweekState> {
 
       log("Week$startdate");
       log(endee.toString());
-
+      int totalamountexlastweek = 0;
       FirebaseFirestore.instance
           .collection("transaction")
-          .where('date', isGreaterThan: finalstart)
-          .where('date', isLessThan: finalend)
+          .where('date', isGreaterThanOrEqualTo: finalstart)
+          .where('date', isLessThanOrEqualTo: finalend)
           .orderBy('date', descending: true)
           .snapshots()
           .listen((event) async {
-        int totalamountexlastweek = 0;
         for (var message in event.docs) {
           var data = await ServiceApi()
               .getspecificcategory(id: message['category_id']);
-          if (data['type'] == 'Expense') {
-            totalamountexlastweek =
-                totalamountexlastweek + message['amount'] as int;
-            emit(QuerydatalastweekState(
-                expensetotalamountlastweek: totalamountexlastweek));
-            log('Income');
-          } else {
-            log('Income query');
+          if (data.data() != null) {
+            if (data['type'] == 'Expense') {
+              totalamountexlastweek =
+                  totalamountexlastweek + message['amount'] as int;
+
+              log('Expense');
+            } else {
+              log('Income query');
+            }
           }
         }
+        log('lastweek amount ${totalamountexlastweek.toString()}');
+        emit(QuerydatalastweekState(
+            expensetotalamountlastweek: totalamountexlastweek));
       });
     }
   }

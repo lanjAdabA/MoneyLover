@@ -52,8 +52,14 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
     int lastweekExpenditure = lastweek.expensetotalamountlastweek;
     log(lastmonthExpenditure.toString());
 
-    List<DocumentSnapshot<Object?>> cateogoryname = recent.categoyname;
+    List cateogoryname = recent.categoryname;
+    List categoryid = recent.categoryid;
+
     List transaction = recent.transaction;
+    List transactionid = recent.transactionid;
+
+    List recent5categoryname = recent.cateogoryname2;
+    List recent5transaction = recent.transaction2;
 
     List cateogorynameExp = s.top3categoryname;
     List transactionExp = s.top3transaction;
@@ -295,10 +301,18 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                         SizedBox(
                           width: double.maxFinite,
                           height: 250,
-                          child: TabBarView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              controller: tabController,
-                              children: [
+                          child:
+                              // thisweekExpenditure == 0
+                              //     ? Container(
+                              //         padding: const EdgeInsets.all(8.0),
+                              //         child: const Center(
+                              //             child: CircularProgressIndicator()),
+                              //       )
+                              //     :
+                              TabBarView(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  controller: tabController,
+                                  children: [
                                 //*graph part
                                 //!graph 1
                                 Column(
@@ -384,57 +398,66 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                             ),
                           ),
                         ),
+                        cateogorynameExp.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: cateogorynameExp.length,
+                                itemBuilder: ((context, index) {
+                                  double per = (transactionExp[index]
+                                              ['amount'] /
+                                          expensetotalamount) *
+                                      100;
 
-                        ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: cateogorynameExp.length,
-                          itemBuilder: ((context, index) {
-                            double per = (transactionExp[index]['amount'] /
-                                    expensetotalamount) *
-                                100;
-
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: ListTile(
-                                leading: Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: const [
-                                    CircleAvatar(
-                                        backgroundColor:
-                                            Color.fromARGB(255, 43, 56, 96),
-                                        radius: 12,
-                                        child: Icon(
-                                          Icons.wallet,
-                                          size: 20,
-                                          color:
-                                              Color.fromARGB(255, 248, 135, 79),
-                                        )),
-                                  ],
-                                ),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      cateogorynameExp[index]['name'],
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: ListTile(
+                                      leading: Stack(
+                                        alignment: Alignment.bottomRight,
+                                        children: const [
+                                          CircleAvatar(
+                                              backgroundColor: Color.fromARGB(
+                                                  255, 43, 56, 96),
+                                              radius: 12,
+                                              child: Icon(
+                                                Icons.wallet,
+                                                size: 20,
+                                                color: Color.fromARGB(
+                                                    255, 248, 135, 79),
+                                              )),
+                                        ],
+                                      ),
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            cateogorynameExp[index]['name'],
+                                          ),
+                                          Text(
+                                            currencyformat.format(
+                                                transactionExp[index]
+                                                    ['amount']),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey),
+                                          )
+                                        ],
+                                      ),
+                                      trailing: Text(
+                                        '${per.toInt().toString()}%',
+                                        style:
+                                            const TextStyle(color: Colors.red),
+                                      ),
                                     ),
-                                    Text(
-                                      currencyformat.format(
-                                          transactionExp[index]['amount']),
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    )
-                                  ],
-                                ),
-                                trailing: Text(
-                                  '${per.toInt().toString()}%',
-                                  style: const TextStyle(color: Colors.red),
-                                ),
+                                  );
+                                }),
                               ),
-                            );
-                          }),
-                        ),
                       ],
                     ),
                   ),
@@ -486,17 +509,25 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'Recent transactions',
                     ),
-                    Text('See all', style: TextStyle(color: Colors.green))
+                    TextButton(
+                      onPressed: () {
+                        context.router.push(const AllRecentsRoute());
+                      },
+                      child: const Text(
+                        'See all',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    )
                   ],
                 ),
               ),
 
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -507,63 +538,92 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 15),
-                          child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: transaction.length,
-                              itemBuilder: ((context, index) {
-                                Timestamp date = transaction[index]['date'];
-                                var datetime = date.toDate();
-                                var datefinal =
-                                    DateFormat.yMMMd().format(datetime);
+                          child: recent5transaction.isEmpty
+                              ? const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: CircularProgressIndicator(),
+                                )
+                              : ListView.builder(
+                                  physics: const BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: recent5transaction.length,
+                                  itemBuilder: ((context, index) {
+                                    Timestamp date =
+                                        recent5transaction[index]['date'];
+                                    var datetime = date.toDate();
+                                    var datefinal =
+                                        DateFormat.yMMMd().format(datetime);
 
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: ListTile(
-                                    leading: Stack(
-                                      alignment: Alignment.bottomRight,
-                                      children: const [
-                                        CircleAvatar(
-                                            backgroundColor:
-                                                Color.fromARGB(255, 43, 56, 96),
-                                            radius: 12,
-                                            child: Icon(
-                                              Icons.wallet,
-                                              size: 20,
-                                              color: Color.fromARGB(
-                                                  255, 248, 135, 79),
-                                            )),
-                                      ],
-                                    ),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          cateogoryname[index]['name'],
-                                          style: const TextStyle(fontSize: 18),
+                                    return InkWell(
+                                      onTap: () {
+                                        context.router.push(
+                                          InfoDetailRoute(
+                                              amount: recent5transaction[index]
+                                                  ["amount"],
+                                              date: datetime,
+                                              categoryname:
+                                                  recent5categoryname[index],
+                                              transactionid:
+                                                  transactionid[index],
+                                              categoryid: categoryid[index]),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: ListTile(
+                                          leading: Stack(
+                                            alignment: Alignment.bottomRight,
+                                            children: const [
+                                              CircleAvatar(
+                                                  backgroundColor:
+                                                      Color.fromARGB(
+                                                          255, 43, 56, 96),
+                                                  radius: 12,
+                                                  child: Icon(
+                                                    Icons.wallet,
+                                                    size: 20,
+                                                    color: Color.fromARGB(
+                                                        255, 248, 135, 79),
+                                                  )),
+                                            ],
+                                          ),
+                                          title: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                recent5categoryname[index],
+                                                style: const TextStyle(
+                                                    fontSize: 18),
+                                              ),
+                                              Text(
+                                                datefinal.toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.grey),
+                                              )
+                                            ],
+                                          ),
+                                          trailing: Text(
+                                            currencyformat.format(
+                                                recent5transaction[index]
+                                                    ['amount']),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: recent5categoryname[
+                                                                index] ==
+                                                            'Salary' ||
+                                                        recent5categoryname[
+                                                                index] ==
+                                                            "Other Income"
+                                                    ? Colors.blue
+                                                    : Colors.red),
+                                          ),
                                         ),
-                                        Text(
-                                          datefinal.toString(),
-                                          style: const TextStyle(
-                                              fontSize: 15, color: Colors.grey),
-                                        )
-                                      ],
-                                    ),
-                                    trailing: Text(
-                                      currencyformat
-                                          .format(transaction[index]['amount']),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: cateogoryname[index]['name'] ==
-                                                  'Salary'
-                                              ? Colors.blue
-                                              : Colors.red),
-                                    ),
-                                  ),
-                                );
-                              })),
+                                      ),
+                                    );
+                                  })),
                         )
                       ],
                     ),
@@ -573,15 +633,23 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "That's everything",
-                      style: TextStyle(color: Colors.grey),
+                  children: [
+                    Column(
+                      children: const [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "That's everything",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
                     ),
-                    Icon(
-                      Icons.switch_access_shortcut_add,
-                      color: Colors.amber,
-                    )
+                    // Icon(
+                    //   Icons.switch_access_shortcut_add,
+                    //   color: Colors.amber,
+                    // ),
+                    const Text("💫")
                   ],
                 ),
               ),
